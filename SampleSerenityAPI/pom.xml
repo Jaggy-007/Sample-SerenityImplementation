@@ -1,0 +1,221 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.jpmchase.serenity</groupId>
+	<artifactId>SampleSerenityAPI</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>SampleSerenityAPI</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<serenity.version>1.1.42</serenity.version>
+		<serenity.cucumber.version>1.1.1</serenity.cucumber.version>
+		<serenity.maven.version>1.1.42</serenity.maven.version>
+		<junit.version>4.12</junit.version>
+		<slf4j.version>1.7.25</slf4j.version>
+		<maven.failsafe.plugin.version>2.18</maven.failsafe.plugin.version>
+		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>LocalUat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>Using LocalUat.properties</echo>
+										<delete file="serenity.properties" />
+										<copy file="src/test/resource/Config/LocalUat.properties"
+											tofile="serenity.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+							<execution>
+								<id>verify</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<echo>copy jpmc logo</echo>
+									<!--  	<delete file="target/site/serenity/images/serenity-bdd.png" />-->
+										<copy file="lib/serenity-bdd.png"
+											tofile="target/site/serenity/images/serenity-bdd.png" />
+										<replace file="target/site/serenity/index.html" token="Serenity Reports"
+											value="Automation Test Reports" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-core</artifactId>
+			<version>${serenity.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-junit</artifactId>
+			<version>${serenity.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-cucumber</artifactId>
+			<version>${serenity.cucumber.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-jira-plugin</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		
+	<!-- 	<dependency>
+			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-rest-java-client-api</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
+			<artifactId>jira-rest-java-client-core</artifactId>
+			<version>3.0.0</version>
+		</dependency>  -->
+		
+		
+		
+		
+		<dependency>
+			<groupId>net.serenity-bdd</groupId>
+			<artifactId>serenity-rest-assured</artifactId>
+			<version>${serenity.version}</version>
+		</dependency>
+		
+		
+		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.8.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20170516</version>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>1.7.0</version>
+			<scope>test</scope>
+		</dependency>
+	<!--  	<dependency>
+			<groupId>org.hamcrest.core</groupId>
+			<artifactId>org.hamcrest.core</artifactId>
+			<version>1.1.0</version>
+		</dependency>  -->
+
+	</dependencies>
+
+	<build>
+		<plugins>
+		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>enforce</id>
+						<configuration>
+						<rules>
+						<requireUpperBoundDeps/>
+						</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven.failsafe.plugin.version}</version>
+				<configuration>
+					<includes>
+						<include>com/chase/runner/APIRunner.java</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.serenity-bdd.maven.plugins</groupId>
+				<artifactId>serenity-maven-plugin</artifactId>
+				<version>${serenity.maven.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>net.serenity-bdd</groupId>
+						<artifactId>serenity-core</artifactId>
+						<version>${serenity.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>serenity-reports</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
